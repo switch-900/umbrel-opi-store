@@ -5,9 +5,8 @@ services:
     environment:
       APP_HOST: opi_web_1
       APP_PORT: 3000
-      PROXY_AUTH_WHITELIST: "/api/*"  # Allow API endpoints without auth
-  web:
-    image: getumbrel/opi:1.0.0@sha256:f8ba8b97e550f65e5bc935d7516cce7172910e9009f3154a434c7baf55e82a2b
+      PROXY_AUTH_WHITELIST: "/api/*"  # Allow API endpoints without auth  web:
+    image: bestinslot/opi:latest
     container_name: opi_web_1
     restart: on-failure
     stop_grace_period: 1m

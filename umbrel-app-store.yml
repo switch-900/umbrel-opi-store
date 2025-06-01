@@ -1,3 +1,9 @@
 id: opi-community
 name: "OPI Community Apps"
 url: "https://github.com/switch-900/umbrel-opi-store"
+apps:
+  - id: opi-community-indexer
+    name: "OPI - Open Protocol Indexer"
+    category: Blockchain
+    version: "1.0.0"
+    tagline: "Best-in-slot open-source indexing client for Bitcoin meta-protocols"
