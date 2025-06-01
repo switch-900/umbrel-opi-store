@@ -6,6 +6,8 @@ version: "1.0.0"
 tagline: Best-in-slot open-source indexing client for Bitcoin meta-protocols
 icon: https://imagedelivery.net/wyrwp3c-j0gDDUWgnE7lig/6a387bc2-942a-4834-5034-9f8b62158600/public
 description: >-
+  ⚠️ IMPORTANT: Requires at least 100GB of free storage space and 8GB RAM for full indexing.
+
   OPI (Open Protocol Indexer) is a powerful indexing client for Bitcoin meta-protocols.
   It provides indexing and API services for BRC-20, Bitmap, SNS, POW20 and Runes protocols.
   Built with modularity in mind, it uses a fork of ord with minimal changes to maintain
