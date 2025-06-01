@@ -1,0 +1,57 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: opi_web_1
+      APP_PORT: 3000
+      PROXY_AUTH_WHITELIST: "/api/*"  # Allow API endpoints without auth
+  web:
+    image: getumbrel/opi:1.0.0@sha256:f8ba8b97e550f65e5bc935d7516cce7172910e9009f3154a434c7baf55e82a2b
+    container_name: opi_web_1
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      # Bitcoin Core connection details from Umbrel
+      BITCOIN_RPC_HOST: "${APP_BITCOIN_NODE_IP:-localhost}"
+      BITCOIN_RPC_PORT: "${APP_BITCOIN_RPC_PORT:-8332}"
+      BITCOIN_RPC_USER: "${APP_BITCOIN_RPC_USER:-umbrel}"
+      BITCOIN_RPC_PASS: "${APP_BITCOIN_RPC_PASS:-umbrel}"
+      
+      # App configuration
+      PORT: 3000
+      DEBUG: "opi:*"
+      
+      # PostgreSQL connection details
+      POSTGRES_HOST: "db"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+      POSTGRES_PASSWORD: "${APP_SEED:-default_password}"
+      POSTGRES_DB: "opi"
+    depends_on:
+      - db    volumes:
+      - ${APP_DATA_DIR:-/home/umbrel/umbrel/app-store/opi/data}/opi:/data
+      - ${APP_BITCOIN_DATA_DIR:-/home/umbrel/bitcoin}:/bitcoin:ro
+    networks:
+      - default
+      - bitcoin
+
+  db:
+    image: postgres:14-alpine
+    container_name: opi_db_1
+    restart: on-failure
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+      POSTGRES_PASSWORD: "${APP_SEED:-default_password}"
+      POSTGRES_DB: "opi"
+    volumes:
+      - ${APP_DATA_DIR:-/home/umbrel/umbrel/app-store/opi/data}/postgres:/var/lib/postgresql/data
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
+  bitcoin:
+    external: true
+    name: bitcoin

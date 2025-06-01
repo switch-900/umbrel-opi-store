@@ -1,0 +1,56 @@
+manifestVersion: 1
+id: opi-community-indexer
+category: Blockchain
+name: OPI - Open Protocol Indexer
+version: "1.0.0"
+tagline: Best-in-slot open-source indexing client for Bitcoin meta-protocols
+icon: https://imagedelivery.net/wyrwp3c-j0gDDUWgnE7lig/6a387bc2-942a-4834-5034-9f8b62158600/public
+description: >-
+  OPI (Open Protocol Indexer) is a powerful indexing client for Bitcoin meta-protocols.
+  It provides indexing and API services for BRC-20, Bitmap, SNS, POW20 and Runes protocols.
+  Built with modularity in mind, it uses a fork of ord with minimal changes to maintain
+  compatibility with base layer rules.
+
+  Features:
+  - BRC-20 indexing and API
+  - Bitmap protocol support
+  - SNS (Sats Names) indexing
+  - POW20 protocol support
+  - Runes protocol indexing
+  - Full reorg protection
+  - Modular architecture
+
+  Requires at least 100GB of storage space for full indexing.
+
+developer: Best in Slot LLC FZ
+website: https://github.com/bestinslot-xyz/OPI
+dependencies:
+  - bitcoin
+permission:
+  server:
+    type: restricted
+    proxy:
+      - host: app
+        port: 3000
+  bitcoin:
+    type: restricted
+    proxy:
+      - host: bitcoin
+        port: 8332
+
+repo: https://github.com/bestinslot-xyz/OPI
+support: https://github.com/bestinslot-xyz/OPI/issues
+port: 3000
+gallery:
+  - https://imagedelivery.net/wyrwp3c-j0gDDUWgnE7lig/6a387bc2-942a-4834-5034-9f8b62158600/public
+
+path: ""
+defaultUsername: "umbrel"
+defaultPassword: ""
+
+deterministicPassword: true
+
+device:
+  storage:
+    min: 100000000
+    max: 1000000000
