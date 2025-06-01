@@ -2,6 +2,7 @@ version: "3.7"
 
 services:  app_proxy:
     image: getumbrel/app-proxy:latest
+    container_name: opi_proxy_1
     restart: on-failure
     environment:
       APP_HOST: web
@@ -9,7 +10,15 @@ services:  app_proxy:
     networks:
       - default
       - bitcoin
-  web:
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M  web:
     image: getumbrel/opi:1.0.0
     build: 
       context: .
@@ -20,6 +29,15 @@ services:  app_proxy:
     networks:
       - default
       - bitcoin
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 4G
     environment:
       - BITCOIN_RPC_HOST=${APP_BITCOIN_NODE_IP}
       - BITCOIN_RPC_PORT=${APP_BITCOIN_RPC_PORT}
@@ -34,8 +52,7 @@ services:  app_proxy:
       - ${APP_DATA_DIR}/data:/data
       - ${APP_BITCOIN_DATA_DIR}:/bitcoin:ro
     depends_on:
-      - db
-  db:
+      - db  db:
     image: postgres:14-alpine
     container_name: opi_db_1
     restart: on-failure
@@ -43,6 +60,18 @@ services:  app_proxy:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${APP_SEED}
       - POSTGRES_DB=opi
+      - POSTGRES_SHARED_BUFFERS=1GB
+      - POSTGRES_EFFECTIVE_CACHE_SIZE=3GB
+      - POSTGRES_WORK_MEM=16MB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d opi"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 2G
     volumes:      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
     networks:
       - default
