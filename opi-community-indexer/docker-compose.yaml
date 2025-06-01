@@ -3,22 +3,26 @@ version: "3.7"
 services:
   app_proxy:
     image: getumbrel/app-proxy:latest
-    restart: on-failure    environment:
+    restart: on-failure
+    environment:
       APP_HOST: opi_web_1
       APP_PORT: 3000
       PROXY_AUTH_WHITELIST: "/api/*"  # Allow API endpoints without auth
     networks:
       - default
       - bitcoin
-
   web:
-    image: ghcr.io/bestinslot-xyz/opi:latest
+    image: getumbrel/opi:1.0.0
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
     container_name: opi_web_1
     restart: on-failure
     stop_grace_period: 1m
+    init: true
     environment:
       # Bitcoin Core connection details from Umbrel
-      BITCOIN_RPC_HOST: "${APP_BITCOIN_NODE_IP:-localhost}"
+      BITCOIN_RPC_HOST: "10.21.21.8"
       BITCOIN_RPC_PORT: "${APP_BITCOIN_RPC_PORT:-8332}"
       BITCOIN_RPC_USER: "${APP_BITCOIN_RPC_USER:-umbrel}"
       BITCOIN_RPC_PASS: "${APP_BITCOIN_RPC_PASS:-umbrel}"
