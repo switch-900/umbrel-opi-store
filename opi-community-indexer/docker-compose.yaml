@@ -1,18 +1,25 @@
 version: "3.7"
 
-services:
-  app_proxy:
+services:  app_proxy:
+    image: getumbrel/app-proxy:latest
+    restart: on-failure
     environment:
-      APP_HOST: opi_web_1
+      APP_HOST: web
       APP_PORT: 3000
-
+    networks:
+      - default
+      - bitcoin
   web:
     image: getumbrel/opi:1.0.0
     build: 
       context: .
       dockerfile: ./Dockerfile
+    container_name: opi_web_1
     restart: on-failure
     stop_grace_period: 1m
+    networks:
+      - default
+      - bitcoin
     environment:
       - BITCOIN_RPC_HOST=${APP_BITCOIN_NODE_IP}
       - BITCOIN_RPC_PORT=${APP_BITCOIN_RPC_PORT}
@@ -22,30 +29,27 @@ services:
       - POSTGRES_PORT=5432
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${APP_SEED}
-      - POSTGRES_DB=opi    volumes:
-      - opi_data:/data
+      - POSTGRES_DB=opi
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
       - ${APP_BITCOIN_DATA_DIR}:/bitcoin:ro
     depends_on:
       - db
-
   db:
     image: postgres:14-alpine
+    container_name: opi_db_1
     restart: on-failure
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${APP_SEED}
-      - POSTGRES_DB=opi    volumes:
-      - opi_postgres:/var/lib/postgresql/data
-
-volumes:
-  opi_data:
-    name: "${VOLUME_PREFIX:-opi}_data"
-  opi_postgres:
-    name: "${VOLUME_PREFIX:-opi}_postgres"
+      - POSTGRES_DB=opi
+    volumes:      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
+    networks:
+      - default
 
 networks:
   default:
     driver: bridge
   bitcoin:
     external: true
-    name: "${BITCOIN_NETWORK:-umbrel_bitcoin_default}"
+    name: bitcoin
