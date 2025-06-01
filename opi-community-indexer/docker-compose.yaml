@@ -11,11 +11,15 @@ services:
     networks:
       - default
       - bitcoin
-  web:
+    networks:
+      - default
+      - bitcoin  web:
     image: getumbrel/opi:1.0.0
-    build: 
+    build:
       context: .
       dockerfile: ./Dockerfile
+    env_file:
+      - .env
     container_name: opi_web_1
     restart: on-failure
     stop_grace_period: 1m
