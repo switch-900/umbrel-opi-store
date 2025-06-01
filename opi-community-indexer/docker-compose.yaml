@@ -5,8 +5,10 @@ services:
     environment:
       APP_HOST: opi_web_1
       APP_PORT: 3000
-      PROXY_AUTH_WHITELIST: "/api/*"  # Allow API endpoints without auth  web:
-    image: bestinslot/opi:latest
+      PROXY_AUTH_WHITELIST: "/api/*"  # Allow API endpoints without auth
+
+  web:
+    image: ghcr.io/bestinslot-xyz/opi:latest
     container_name: opi_web_1
     restart: on-failure
     stop_grace_period: 1m
