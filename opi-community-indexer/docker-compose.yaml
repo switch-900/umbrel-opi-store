@@ -2,10 +2,14 @@ version: "3.7"
 
 services:
   app_proxy:
-    environment:
+    image: getumbrel/app-proxy:latest
+    restart: on-failure    environment:
       APP_HOST: opi_web_1
       APP_PORT: 3000
       PROXY_AUTH_WHITELIST: "/api/*"  # Allow API endpoints without auth
+    networks:
+      - default
+      - bitcoin
 
   web:
     image: ghcr.io/bestinslot-xyz/opi:latest
@@ -46,11 +50,15 @@ services:
       POSTGRES_PASSWORD: "${APP_SEED:-default_password}"
       POSTGRES_DB: "opi"
     volumes:
-      - ${APP_DATA_DIR:-/home/umbrel/umbrel/app-store/opi/data}/postgres:/var/lib/postgresql/data
-    networks:
+      - ${APP_DATA_DIR:-/home/umbrel/umbrel/app-store/opi/data}/postgres:/var/lib/postgresql/data    networks:
       - default
 
 networks:
+  default:
+    name: "${NETWORK_NAME:-opi-community-indexer_default}"
+  bitcoin:
+    name: "${BITCOIN_NETWORK:-umbrel_bitcoin_default}"
+    external: true
   default:
     driver: bridge
   bitcoin:
