@@ -23,21 +23,10 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${APP_SEED}
       - POSTGRES_DB=opi    volumes:
-      - type: bind
-        source: ${APP_DATA_DIR}/data
-        target: /data
-      - type: bind
-        source: ${APP_BITCOIN_DATA_DIR}
-        target: /bitcoin
-        read_only: true
+      - opi_data:/data
+      - ${APP_BITCOIN_DATA_DIR}:/bitcoin:ro
     depends_on:
       - db
-    deploy:
-      resources:
-        limits:
-          memory: 4G
-        reservations:
-          memory: 2G
 
   db:
     image: postgres:14-alpine
@@ -46,12 +35,17 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${APP_SEED}
       - POSTGRES_DB=opi    volumes:
-      - type: bind
-        source: ${APP_DATA_DIR}/postgres
-        target: /var/lib/postgresql/data
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-        reservations:
-          memory: 1G
+      - opi_postgres:/var/lib/postgresql/data
+
+volumes:
+  opi_data:
+    name: "${VOLUME_PREFIX:-opi}_data"
+  opi_postgres:
+    name: "${VOLUME_PREFIX:-opi}_postgres"
+
+networks:
+  default:
+    driver: bridge
+  bitcoin:
+    external: true
+    name: "${BITCOIN_NETWORK:-umbrel_bitcoin_default}"
